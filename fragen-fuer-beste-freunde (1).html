@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f7f1e8" />
+  <title>Origami Fragen</title>
+  <style>
+    :root {
+      --paper: #f7f1e8;
+      --paper-deep: #eee5d8;
+      --ink: #20252b;
+      --muted: #73777b;
+      --line: rgba(32, 37, 43, .13);
+      --coral: #ed6b58;
+      --coral-dark: #c85142;
+      --blue: #477a8e;
+      --cream: #fffaf2;
+      --shadow: 0 22px 70px rgba(58, 43, 30, .13);
+      --radius: 24px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 4%, rgba(237,107,88,.14), transparent 24rem),
+        radial-gradient(circle at 96% 12%, rgba(71,122,142,.13), transparent 26rem),
+        var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; padding: 24px 0 10px; gap: 20px; }
+    .brand { display: flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; }
+    .brand-mark { width: 42px; height: 42px; border-radius: 14px 14px 14px 4px; display: grid; place-items: center; color: white; background: var(--coral); font-weight: 900; font-size: 19px; transform: rotate(-4deg); box-shadow: 0 9px 18px rgba(237,107,88,.25); }
+    .brand strong { display: block; letter-spacing: -.02em; }
+    .brand small { display: block; color: var(--muted); margin-top: 2px; }
+    .eyebrow { color: var(--coral-dark); font-weight: 800; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+    .top-actions { display: flex; align-items: center; gap: 10px; }
+    .pill, .icon-btn, .primary-btn, .ghost-btn, .filter-btn { border: 1px solid var(--line); background: rgba(255,250,242,.72); color: var(--ink); border-radius: 999px; transition: .18s ease; }
+    .pill { padding: 9px 14px; color: var(--muted); font-size: 13px; }
+    .icon-btn { width: 42px; height: 42px; display: grid; place-items: center; font-size: 18px; }
+    .icon-btn:hover, .ghost-btn:hover, .filter-btn:hover { border-color: rgba(237,107,88,.55); transform: translateY(-1px); }
+    .hero { padding: 44px 0 30px; display: grid; grid-template-columns: 1.2fr .8fr; align-items: end; gap: 40px; }
+    h1 { font-family: Georgia, "Times New Roman", serif; font-weight: 500; letter-spacing: -.055em; font-size: clamp(44px, 7vw, 78px); line-height: .98; margin: 12px 0 18px; max-width: 760px; }
+    .hero p { color: var(--muted); font-size: 18px; line-height: 1.55; max-width: 630px; margin: 0; }
+    .hero-note { justify-self: end; max-width: 300px; padding: 18px 20px; border-left: 3px solid var(--blue); color: #4e5c62; line-height: 1.5; font-size: 14px; }
+    .workspace { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 22px; align-items: start; padding-bottom: 70px; }
+    .main-card { background: rgba(255,250,242,.79); border: 1px solid rgba(255,255,255,.78); box-shadow: var(--shadow); border-radius: var(--radius); overflow: hidden; }
+    .card-top { padding: 20px 24px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .counter { font-size: 13px; color: var(--muted); }
+    .counter strong { color: var(--ink); }
+    .level { font-size: 12px; padding: 7px 11px; border-radius: 999px; background: #e8f0ef; color: #3e6b73; font-weight: 800; }
+    .level.personal { background: #f9e9dc; color: #a45038; }
+    .level.deep { background: #e9e6f5; color: #60558e; }
+    .question-area { min-height: 430px; padding: clamp(32px, 6vw, 72px) clamp(24px, 7vw, 88px) 48px; display: flex; flex-direction: column; justify-content: center; }
+    .question-number { color: var(--coral-dark); font-weight: 800; letter-spacing: .12em; text-transform: uppercase; font-size: 12px; margin-bottom: 26px; }
+    .question-text { font-family: Georgia, "Times New Roman", serif; font-size: clamp(31px, 4.2vw, 54px); line-height: 1.08; letter-spacing: -.035em; margin: 0; max-width: 850px; }
+    .question-text::first-letter { color: var(--coral); }
+    .question-meta { color: var(--muted); margin-top: 26px; font-size: 14px; line-height: 1.5; }
+    .card-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 24px 24px; }
+    .left-actions, .right-actions { display: flex; gap: 10px; align-items: center; }
+    .primary-btn, .ghost-btn { padding: 12px 17px; font-weight: 800; }
+    .primary-btn { background: var(--ink); color: white; border-color: var(--ink); box-shadow: 0 8px 16px rgba(32,37,43,.16); }
+    .primary-btn:hover { background: var(--coral-dark); border-color: var(--coral-dark); transform: translateY(-1px); }
+    .ghost-btn { background: transparent; }
+    .favorite { min-width: 44px; height: 44px; padding: 0; display: grid; place-items: center; font-size: 21px; }
+    .favorite.active { color: var(--coral); background: #fff0eb; border-color: #f4c2b8; }
+    .side { display: grid; gap: 16px; }
+    .side-card { background: rgba(255,250,242,.72); border: 1px solid var(--line); border-radius: 20px; padding: 18px; }
+    .side-card h2 { margin: 0 0 13px; font-size: 14px; letter-spacing: .03em; }
+    .side-card p { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0; }
+    .search-wrap { position: relative; }
+    .search-wrap span { position: absolute; left: 14px; top: 11px; color: var(--muted); }
+    .search { width: 100%; border: 1px solid var(--line); border-radius: 13px; padding: 11px 13px 11px 38px; background: rgba(255,255,255,.48); color: var(--ink); outline: none; }
+    .search:focus { border-color: var(--coral); box-shadow: 0 0 0 3px rgba(237,107,88,.14); }
+    .filters { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 13px; }
+    .filter-btn { padding: 8px 11px; font-size: 12px; background: transparent; }
+    .filter-btn.active { background: var(--ink); border-color: var(--ink); color: white; }
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stat { background: rgba(238,229,216,.58); border-radius: 14px; padding: 13px; }
+    .stat strong { display: block; font-size: 22px; letter-spacing: -.04em; }
+    .stat span { color: var(--muted); font-size: 11px; }
+    .progress { height: 7px; background: var(--paper-deep); border-radius: 20px; overflow: hidden; margin-top: 13px; }
+    .progress > div { height: 100%; width: 0%; background: linear-gradient(90deg, var(--coral), var(--blue)); border-radius: inherit; transition: width .3s ease; }
+    .result-list { margin-top: 13px; max-height: 270px; overflow: auto; display: grid; gap: 7px; padding-right: 2px; }
+    .result { text-align: left; border: 1px solid transparent; background: rgba(255,255,255,.4); border-radius: 12px; padding: 10px 11px; color: var(--ink); font-size: 12px; line-height: 1.35; }
+    .result:hover { border-color: rgba(237,107,88,.5); background: #fffaf2; }
+    .result small { display: block; color: var(--muted); margin-bottom: 3px; }
+    .empty { color: var(--muted); font-size: 13px; padding: 10px 2px; }
+    .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; background: var(--ink); color: white; border-radius: 999px; padding: 11px 16px; font-size: 13px; transition: .22s ease; box-shadow: 0 12px 30px rgba(32,37,43,.2); }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .footer { border-top: 1px solid var(--line); padding: 20px 0 35px; color: var(--muted); font-size: 12px; display: flex; justify-content: space-between; gap: 15px; }
+    kbd { border: 1px solid var(--line); background: rgba(255,255,255,.45); border-radius: 5px; padding: 2px 5px; font-size: 11px; }
+    @media (max-width: 850px) {
+      .hero { grid-template-columns: 1fr; gap: 20px; padding-top: 32px; }
+      .hero-note { justify-self: start; max-width: none; }
+      .workspace { grid-template-columns: 1fr; }
+      .side { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .side-card:last-child { grid-column: 1 / -1; }
+    }
+    @media (max-width: 560px) {
+      .shell { width: min(100% - 24px, 1180px); }
+      .topbar { padding-top: 16px; }
+      .pill { display: none; }
+      h1 { font-size: 48px; }
+      .hero p { font-size: 16px; }
+      .side { grid-template-columns: 1fr; }
+      .side-card:last-child { grid-column: auto; }
+      .card-actions { align-items: stretch; flex-direction: column; }
+      .left-actions, .right-actions { width: 100%; }
+      .left-actions .primary-btn { flex: 1; }
+      .right-actions { justify-content: space-between; }
+      .question-area { min-height: 390px; }
+      .question-text { font-size: 36px; }
+      .footer { flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="Startseite">
+        <span class="brand-mark">?</span>
+        <span><strong>Origami Fragen</strong><small>1000 Gesprächsöffner</small></span>
+      </a>
+      <div class="top-actions">
+        <span class="pill">gemischt · ohne Kategorien</span>
+        <button class="icon-btn" id="randomTop" title="Zufällige Frage" aria-label="Zufällige Frage">↗</button>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div>
+          <div class="eyebrow">Für lange Abende und kurze Discord Gespräche.</div>
+          <h1>Zieh eine zufällige Karte oder such dir genau die aus, die gerade passt.</h1>
+        </div>
+        <div class="hero-note">Es gibt kein richtiges Tempo. Manche Fragen sind für den ersten Kaffee, andere für Gespräche, die bis weit nach Mitternacht dauern.</div>
+      </section>
+
+      <section class="workspace" aria-label="Fragen-App">
+        <article class="main-card">
+          <div class="card-top">
+            <div class="counter">Frage <strong id="number">1</strong> von <strong id="total">1000</strong></div>
+            <div class="level" id="level">sanft</div>
+          </div>
+          <div class="question-area" aria-live="polite">
+            <div class="question-number" id="questionLabel">FRAGE 001</div>
+            <h2 class="question-text" id="questionText">Wird geladen …</h2>
+            <div class="question-meta" id="questionMeta">Nimm dir Zeit. Eine ehrliche Antwort ist wichtiger als eine schnelle.</div>
+          </div>
+          <div class="card-actions">
+            <div class="left-actions">
+              <button class="primary-btn" id="nextBtn">Nächste Frage <span aria-hidden="true">→</span></button>
+              <button class="ghost-btn" id="backBtn" title="Vorherige Frage">← Zurück</button>
+            </div>
+            <div class="right-actions">
+              <button class="ghost-btn favorite" id="favoriteBtn" title="Als Favorit speichern" aria-label="Als Favorit speichern">♡</button>
+              <button class="ghost-btn" id="copyBtn" title="Frage kopieren">Kopieren</button>
+            </div>
+          </div>
+        </article>
+
+        <aside class="side">
+          <section class="side-card">
+            <h2>Fragen finden</h2>
+            <div class="search-wrap"><span aria-hidden="true">⌕</span><input id="search" class="search" type="search" placeholder="z. B. Kindheit, Liebe, Zukunft …" autocomplete="off" /></div>
+            <div class="filters" role="group" aria-label="Fragenfilter">
+              <button class="filter-btn active" data-filter="all">Alle</button>
+              <button class="filter-btn" data-filter="sanft">Sanft</button>
+              <button class="filter-btn" data-filter="persönlich">Persönlich</button>
+              <button class="filter-btn" data-filter="tief">Tief</button>
+              <button class="filter-btn" data-filter="favorites">Favoriten</button>
+            </div>
+            <div id="results" class="result-list" aria-live="polite"></div>
+          </section>
+
+          <section class="side-card">
+            <h2>Dein Fortschritt</h2>
+            <div class="stats">
+              <div class="stat"><strong id="seenCount">0</strong><span>angesehen</span></div>
+              <div class="stat"><strong id="favoriteCount">0</strong><span>Favoriten</span></div>
+            </div>
+            <div class="progress" aria-label="Fortschritt"><div id="progressBar"></div></div>
+            <p style="margin-top:10px">Du kannst jederzeit springen, suchen oder mit <kbd>Leertaste</kbd> die nächste Frage ziehen.</p>
+          </section>
+
+        </aside>
+      </section>
+    </main>
+
+    <footer class="footer"><span>1000 gemischte Gesprächsfragen</span><span><kbd>Leertaste</kbd> nächste Frage · <kbd>F</kbd> Favorit · <kbd>/</kbd> Suche</span></footer>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    const topics = [
+      'dein Lieblingsessen', 'deine Kindheit', 'dein Zuhause', 'deine beste Freundschaft', 'deine Familie', 'deine Zukunft', 'dein Lieblingsfilm', 'deine Musik', 'deine größten Ängste', 'deine Träume',
+      'dein Alltag', 'deine Arbeit', 'deine Schulzeit', 'deine erste große Liebe', 'deine Urlaube', 'deine Stadt', 'deine Persönlichkeit', 'deine Stärken', 'deine Schwächen', 'deine Gewohnheiten',
+      'deine Werte', 'deine Grenzen', 'dein Humor', 'deine Lieblingsbücher', 'deine Lieblingsserie', 'dein Umgang mit Geld', 'deine Gesundheit', 'deine Freizeit', 'deine Vergangenheit', 'deine Entscheidungen',
+      'deine Fehler', 'deine Erfolge', 'deine Enttäuschungen', 'deine Hoffnungen', 'deine Einsamkeit', 'deine schönsten Erinnerungen', 'deine peinlichsten Momente', 'deine Wünsche', 'deine Geheimnisse', 'dein Vertrauen',
+      'deine Loyalität', 'deine Ehrlichkeit', 'deine Selbstständigkeit', 'deine Freiheit', 'deine Beziehungen', 'deine Vorstellung von Liebe', 'deine Vorstellung von Glück', 'deine Vorstellung von Erfolg', 'deine Vorstellung von Heimat', 'deine Vorstellung von Familie',
+      'deine Morgenroutine', 'deine Abendroutine', 'deine Lieblingsorte', 'deine Lieblingsgerüche', 'deine Lieblingsjahreszeit', 'deine Lieblingsgetränke', 'deine Lieblingsspiele', 'deine Lieblingssportarten', 'deine Lieblingsfeiertage', 'deine Kindheitsträume',
+      'deine Vorbilder', 'deine Idole', 'deine wichtigsten Lektionen', 'deine größten Wendepunkte', 'deine mutigsten Entscheidungen', 'deine schwierigsten Gespräche', 'deine persönlichen Grenzen', 'deine moralischen Überzeugungen', 'deine politischen Hoffnungen', 'deine Sicht auf die Welt',
+      'deine Spiritualität', 'deine Religion', 'deine Zweifel', 'deine Verletzlichkeit', 'deine Eifersucht', 'deine Wut', 'deine Traurigkeit', 'deine Freude', 'deine Dankbarkeit', 'dein Selbstbild',
+      'dein Körpergefühl', 'deine Ausstrahlung', 'deine Schüchternheit', 'deine Offenheit', 'deine Geduld', 'deine Ungeduld', 'deine Ordnung', 'dein Chaos', 'deine Spontaneität', 'dein Bedürfnis nach Sicherheit',
+      'dein Bedürfnis nach Nähe', 'dein Bedürfnis nach Freiheit', 'deine Sicht auf Streit', 'deine Art, dich zu entschuldigen', 'deine Art, zu verzeihen', 'dein Umgang mit Kritik', 'dein Umgang mit Druck', 'dein Umgang mit Verlust', 'dein Umgang mit Veränderung', 'dein Blick auf das Älterwerden'
+    ];
+    const forms = [
+      { level: 'sanft', text: t => `Was kommt dir zu „${t}“ als Erstes in den Sinn?` },
+      { level: 'sanft', text: t => `Welche Erinnerung verbindest du mit „${t}“?` },
+      { level: 'sanft', text: t => `Welche Gefühle verbindest du mit „${t}“?` },
+      { level: 'sanft', text: t => `Welche Bedeutung hat „${t}“ für dich?` },
+      { level: 'sanft', text: t => `Was schätzt du an „${t}“ besonders?` },
+      { level: 'persönlich', text: t => `Was möchtest du über „${t}“ gerne erzählen?` },
+      { level: 'persönlich', text: t => `Was würdest du an „${t}“ gerne verändern?` },
+      { level: 'persönlich', text: t => `Was hast du im Zusammenhang mit „${t}“ gelernt?` },
+      { level: 'tief', text: t => `Was ist deine schönste Erfahrung mit „${t}“?` },
+      { level: 'tief', text: t => `Was ist deine schwierigste Erfahrung mit „${t}“?` }
+    ];
+
+    const questions = topics.flatMap((topic, topicIndex) => forms.map((form, formIndex) => ({
+      id: topicIndex * forms.length + formIndex + 1,
+      text: form.text(topic),
+      level: form.level,
+      topic,
+      formIndex
+    })));
+
+    // Gemischte Reihenfolge, aber bei jedem Laden stabil genug zum Wiederfinden.
+    function seededShuffle(arr) {
+      const copy = [...arr]; let seed = 20261011;
+      for (let i = copy.length - 1; i > 0; i--) {
+        seed = (seed * 9301 + 49297) % 233280;
+        const j = Math.floor((seed / 233280) * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+    const mixed = seededShuffle(questions);
+    const byId = new Map(mixed.map((q, index) => [q.id, { ...q, position: index }]));
+    let current = 0;
+    let history = [];
+    let seen = new Set();
+    let favorites = new Set();
+    let activeFilter = 'all';
+    let searchTerm = '';
+
+    const $ = id => document.getElementById(id);
+    const questionText = $('questionText');
+    const number = $('number');
+    const total = $('total');
+    const label = $('questionLabel');
+    const level = $('level');
+    const favoriteBtn = $('favoriteBtn');
+    const results = $('results');
+    const toast = $('toast');
+    total.textContent = mixed.length.toLocaleString('de-DE');
+
+    function showToast(message) {
+      toast.textContent = message; toast.classList.add('show');
+      clearTimeout(showToast.timer); showToast.timer = setTimeout(() => toast.classList.remove('show'), 1700);
+    }
+    function currentQuestion() { return mixed[current]; }
+    function renderQuestion() {
+      const q = currentQuestion();
+      seen.add(q.id);
+      number.textContent = (current + 1).toLocaleString('de-DE');
+      label.textContent = `FRAGE ${String(current + 1).padStart(3, '0')}`;
+      questionText.textContent = q.text;
+      level.textContent = q.level;
+      level.className = `level ${q.level === 'persönlich' ? 'personal' : q.level === 'tief' ? 'deep' : ''}`;
+      favoriteBtn.classList.toggle('active', favorites.has(q.id));
+      favoriteBtn.textContent = favorites.has(q.id) ? '♥' : '♡';
+      favoriteBtn.setAttribute('aria-label', favorites.has(q.id) ? 'Aus Favoriten entfernen' : 'Als Favorit speichern');
+      $('seenCount').textContent = seen.size.toLocaleString('de-DE');
+      $('favoriteCount').textContent = favorites.size.toLocaleString('de-DE');
+      $('progressBar').style.width = `${Math.min(100, (seen.size / mixed.length) * 100)}%`;
+    }
+    function nextQuestion() {
+      history.push(current);
+      current = (current + 1) % mixed.length;
+      renderQuestion();
+    }
+    function randomQuestion() {
+      history.push(current);
+      let next = Math.floor(Math.random() * mixed.length);
+      if (mixed.length > 1 && next === current) next = (next + 1) % mixed.length;
+      current = next; renderQuestion();
+    }
+    function previousQuestion() {
+      if (history.length) { current = history.pop(); renderQuestion(); }
+      else showToast('Noch keine vorherige Frage');
+    }
+    function toggleFavorite() {
+      const id = currentQuestion().id;
+      if (favorites.has(id)) { favorites.delete(id); showToast('Aus Favoriten entfernt'); }
+      else { favorites.add(id); showToast('Als Favorit gespeichert'); }
+      renderQuestion(); renderResults();
+    }
+    function copyCurrent() {
+      const q = currentQuestion().text;
+      if (navigator.clipboard) navigator.clipboard.writeText(q).then(() => showToast('Frage kopiert'));
+      else showToast('Frage: ' + q);
+    }
+    function renderResults() {
+      const term = searchTerm.trim().toLowerCase();
+      let matches = mixed.filter(q => {
+        const filterOk = activeFilter === 'all' || (activeFilter === 'favorites' && favorites.has(q.id)) || q.level === activeFilter;
+        const textOk = !term || `${q.text} ${q.topic}`.toLowerCase().includes(term);
+        return filterOk && textOk;
+      });
+      results.innerHTML = '';
+      if (!matches.length) { results.innerHTML = '<div class="empty">Keine passenden Fragen gefunden.</div>'; return; }
+      const limited = matches.slice(0, 80);
+      limited.forEach(q => {
+        const button = document.createElement('button'); button.className = 'result';
+        button.innerHTML = `<small>${q.level} · Frage ${q.id}</small>${q.text}`;
+        button.addEventListener('click', () => { history.push(current); current = q.position; renderQuestion(); showToast('Frage ausgewählt'); });
+        results.appendChild(button);
+      });
+      if (matches.length > limited.length) { const more = document.createElement('div'); more.className = 'empty'; more.textContent = `+ ${matches.length - limited.length} weitere Treffer`; results.appendChild(more); }
+    }
+
+    $('nextBtn').addEventListener('click', nextQuestion);
+    $('backBtn').addEventListener('click', previousQuestion);
+    $('randomTop').addEventListener('click', randomQuestion);
+    favoriteBtn.addEventListener('click', toggleFavorite);
+    $('copyBtn').addEventListener('click', copyCurrent);
+    $('search').addEventListener('input', event => { searchTerm = event.target.value; renderResults(); });
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active'); activeFilter = btn.dataset.filter; renderResults();
+    }));
+    document.addEventListener('keydown', event => {
+      if (event.target.matches('input, textarea')) { if (event.key === 'Escape') event.target.blur(); return; }
+      if (event.key === ' ') { event.preventDefault(); nextQuestion(); }
+      if (event.key.toLowerCase() === 'f') toggleFavorite();
+      if (event.key === '/') { event.preventDefault(); $('search').focus(); }
+      if (event.key === 'ArrowLeft') previousQuestion();
+      if (event.key === 'ArrowRight') nextQuestion();
+    });
+
+    renderQuestion(); renderResults();
+  </script>
+</body>
+</html>
